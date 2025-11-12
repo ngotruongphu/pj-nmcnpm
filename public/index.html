@@ -63,6 +63,9 @@
       const msgAI = document.createElement("div");
       msgAI.className = "msg ai";
       msgAI.textContent = "AI: " + reply;
+            const utterance = new SpeechSynthesisUtterance(reply)
+      speechSynthesis.speak(utterance)
+
       chat.appendChild(msgAI);
     }
 
