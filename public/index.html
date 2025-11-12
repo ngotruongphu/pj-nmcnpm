@@ -16,7 +16,7 @@
   <button id="stop">Stop</button>
   <p id="status">Idle</p>
 
-  <textarea id="input" placeholder="Nói hoặc nhập gì đó..."></textarea><br>
+  <textarea id="input" placeholder="Text or input..."></textarea><br>
   <button id="btnSend">Send to AI</button>
 
   <div id="chat"></div>
@@ -47,13 +47,13 @@
     async function sendToAI(text) {
       const msgUser = document.createElement("div");
       msgUser.className = "msg user";
-      msgUser.textContent = "🧑: " + text;
+      msgUser.textContent = "User: " + text;
       chat.appendChild(msgUser);
 
       const res = await fetch("http://localhost:3000/api/ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ inputs: text })
+        body: JSON.stringify({ inputs: text, lang: "en"  })
       });
 
       const data = await res.json();

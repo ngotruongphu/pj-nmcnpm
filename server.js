@@ -30,10 +30,10 @@ app.post("/api/ai", async (req, res) => {
         "Authorization": `Bearer ${process.env.OPENAI_API_KEY}` // 🔑 Thay bằng key thật
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",  // hoặc "gpt-4o", "gpt-3.5-turbo"
+        model: "gpt-3.5-turbo",  // hoặc "gpt-4o", "gpt-3.5-turbo"
         messages: [
-          { role: "system", content: "Bạn là trợ lý AI thân thiện, nói tiếng Việt." },
-          { role: "user", content: inputs }
+          { role: "system", content: "Always and strictly reply in English. Never use any other language under any circumstances" },
+          { role: "user", content: inputs +'. Respond only in English, even if my input is in another language.' }
         ]
       })
     });
