@@ -33,7 +33,7 @@ app.post("/api/ai", async (req, res) => {
         model: "gpt-3.5-turbo",  // hoặc "gpt-4o", "gpt-3.5-turbo"
         messages: [
           { role: "system", content: "Always and strictly reply in English. Never use any other language under any circumstances" },
-          { role: "user", content: inputs +'. Respond only in English, even if my input is in another language.' }
+          { role: "user", content: inputs  }
         ]
       })
     });
