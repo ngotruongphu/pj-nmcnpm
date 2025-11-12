@@ -59,10 +59,10 @@
       const data = await res.json();
       console.log(data);
 
-      const reply = data.reply || "🤖 Không có phản hồi.";
+      const reply = data.reply || "AI: Không có phản hồi.";
       const msgAI = document.createElement("div");
       msgAI.className = "msg ai";
-      msgAI.textContent = "🤖: " + reply;
+      msgAI.textContent = "AI: " + reply;
       chat.appendChild(msgAI);
     }
 
