@@ -32,6 +32,12 @@
           <textarea id="ttsInput" placeholder="Input text to speech"></textarea>
           <button class="btn btn-primary" id="btnSpeak">Speak <i class="fa-solid fa-volume-high"></i></button>
         </div>
+        <div class="card shadow-sm p-4 mb-4 rounded-4">
+          <h3><i class="bi bi-book"></i> English Dictionary</h3>
+          <input id="dictInput" type="text" class="form-control mt-3" placeholder="Enter an English word...">
+          <button id="dictBtn" class="btn btn-primary mt-3">Analyze Word</button>
+          <div id="dictResult" class="mt-4 text-start"></div>
+        </div>
       </div>
       <div class="col-12 col-lg-6">
         <div class="card shadow-sm p-4 mb-4 rounded-4">
@@ -189,6 +195,53 @@
       return html;
     }
 
+    function speakWord(word) {
+      const utter = new SpeechSynthesisUtterance(word);
+      utter.lang = 'en-US';
+      speechSynthesis.speak(utter);
+    }
+
+    document.getElementById("dictBtn").addEventListener("click", async () => {
+      const word = document.getElementById("dictInput").value.trim();
+      const resultDiv = document.getElementById("dictResult");
+
+      if (!word) {
+        resultDiv.innerHTML = "<p>Please enter a word.</p>";
+        return;
+      }
+
+      resultDiv.innerHTML = "<p>Loading...</p>";
+
+      try {
+        const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+        const data = await res.json();
+
+        if (!Array.isArray(data)) {
+          resultDiv.innerHTML = "<p>Word not found.</p>";
+          return;
+        }
+
+        // lấy phần meaning đầu tiên
+        const meanings = data[0].meanings;
+
+        let html = `<h4>${word}<i class="fa-solid fa-volume-high speak-icon" 
+                   style="cursor:pointer; margin-left:10px;" 
+                   onclick="speakWord('${word}')"></i></h4>`;
+
+        meanings.forEach(m => {
+          html += `
+                <p><b>Part of Speech:</b> ${m.partOfSpeech}</p>
+                <p><b>Definition:</b> ${m.definitions[0].definition}</p>
+                <hr>
+            `;
+        });
+
+        resultDiv.innerHTML = html;
+
+      } catch (err) {
+        resultDiv.innerHTML = "<p>Error fetching data.</p>";
+      }
+    });
   </script>
 </body>
 
