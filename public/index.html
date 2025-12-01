@@ -1,25 +1,73 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
-  <title>🎙️ Free Voice → Text → Chat AI</title>
-  <style>
-    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; text-align: center; }
-    textarea { width: 100%; height: 100px; margin-top: 10px; }
-    .msg { background: #f1f1f1; padding: 10px; border-radius: 8px; margin: 10px 0; text-align: left; }
-    .ai { background: #e0f7fa; }
-  </style>
+  <title>Language Learning</title>
+  <!-- Required meta tags -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <!-- Bootstrap CSS v5.2.1 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+
+  <link rel="stylesheet" href="../nmcnpm.css">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+  <script src="https://kit.fontawesome.com/f06f33a12a.js" crossorigin="anonymous"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Changa+One:ital@0;1&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet">
 </head>
+
 <body>
-  <h2>🎙️ Voice to Text + Free AI Chat</h2>
-  <button id="start">Start Talking</button>
-  <button id="stop">Stop</button>
-  <p id="status">Idle</p>
+  <h1>Learning English With AI <i class="fa-brands fa-android fa-bounce slow-bounce"></i></h1>
+  <div class="container py-4">
+    <div class="row">
+      <div class="col-12 col-lg-6">
+        <div class="card shadow-sm p-4 mb-4 rounded-4">
+          <h3>Text to Speech</h3>
+          <textarea id="ttsInput" placeholder="Input text to speech"></textarea>
+          <button class="btn btn-primary" id="btnSpeak">Speak <i class="fa-solid fa-volume-high"></i></button>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="card shadow-sm p-4 mb-4 rounded-4">
+          <h3><i class="bi bi-chat-dots"></i> AI communication</h3>
+          <div class="row py-2">
+            <div class="col-6">
+              <button class="btn btn-primary w-100" id="start">Start Talking</button>
+            </div>
+            <div class="col-6">
+              <button class="btn btn-warning w-100" id="stop">Stop</button>
+            </div>
+          </div>
+          <p id="status">Status: <i class="fa-solid fa-moon"></i></p>
 
-  <textarea id="input" placeholder="Text or input..."></textarea><br>
-  <button id="btnSend">Send to AI</button>
+          <textarea id="input" placeholder="Speech or Text input..."></textarea><br>
+          <button class="btn btn-primary" id="btnSend">Send to AI</button>
 
-  <div id="chat"></div>
+          <div id="chat"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <!-- Bootstrap JavaScript Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+    crossorigin="anonymous"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+    integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+    crossorigin="anonymous"></script>
 
   <script>
     // --- Speech to Text ---
@@ -32,8 +80,17 @@
     const status = document.getElementById("status");
     const chat = document.getElementById("chat");
 
-    document.getElementById("start").onclick = () => { recognition.start(); status.textContent = "🎙️ Đang nghe..."; };
-    document.getElementById("stop").onclick = () => { recognition.stop(); status.textContent = "Đã dừng."; };
+    document.getElementById("start").onclick = () => {
+      recognition.start();
+      status.innerHTML = `Status: <i class="fa-solid fa-microphone-lines fa-beat-fade"></i>`;
+    };
+
+    document.getElementById("stop").onclick = () => {
+      recognition.stop();
+      speechSynthesis.cancel();
+      currentUtterance = null;
+      status.innerHTML = `Status: <i class="fa-solid fa-moon"></i>`;
+    };
 
     recognition.onresult = (event) => {
       let text = "";
@@ -43,7 +100,6 @@
       input.value = text.trim();
     };
 
-    // --- Gửi đến server ---
     async function sendToAI(text) {
       const msgUser = document.createElement("div");
       msgUser.className = "msg user";
@@ -53,18 +109,33 @@
       const res = await fetch("http://localhost:3000/api/ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ inputs: text, lang: "en"  })
+        body: JSON.stringify({ inputs: text, lang: "en" })
       });
 
       const data = await res.json();
       console.log(data);
 
-      const reply = data.reply || "AI: Không có phản hồi.";
+      const reply = data.reply || "AI: No response.";
       const msgAI = document.createElement("div");
       msgAI.className = "msg ai";
-      msgAI.textContent = "AI: " + reply;
-            const utterance = new SpeechSynthesisUtterance(reply)
-      speechSynthesis.speak(utterance)
+      //msgAI.textContent = "AI: " + reply;
+
+      msgAI.innerHTML = formatAIReply(reply);
+
+
+      let currentUtterance = null;
+      currentUtterance = new SpeechSynthesisUtterance(reply);
+      currentUtterance.lang = "en-US";
+      speechSynthesis.speak(currentUtterance);
+
+      /*
+      document.getElementById("btnStopSpeak").onclick = () => {
+        speechSynthesis.cancel();
+        currentUtterance = null;
+      };
+      
+      const utterance = new SpeechSynthesisUtterance(reply)
+      speechSynthesis.speak(utterance)*/
 
       chat.appendChild(msgAI);
     }
@@ -73,6 +144,54 @@
       const text = input.value.trim();
       if (text) sendToAI(text);
     };
+
+    document.getElementById("btnSpeak").onclick = () => {
+      const ttsText = document.getElementById("ttsInput").value.trim();
+      if (!ttsText) return;
+
+      const utter = new SpeechSynthesisUtterance(ttsText);
+      utter.lang = "vi-VN";
+      speechSynthesis.speak(utter);
+    };
+
+    function formatAIReply(text) {
+      // 1. Replace Markdown bold (**text**) → <strong>
+      text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+      // 2. Split by double newline
+      let lines = text.split(/\n+/);
+
+      let html = "";
+      let inList = false;
+
+      lines.forEach(line => {
+        line = line.trim();
+        if (!line) return;
+
+        // Detect "1. Something"
+        const match = line.match(/^(\d+)\.\s+(.*)$/);
+
+        if (match) {
+          if (!inList) {
+            html += "<ol>";
+            inList = true;
+          }
+          html += `<li>${match[2]}</li>`;
+        } else {
+          if (inList) {
+            html += "</ol>";
+            inList = false;
+          }
+          html += `<p>${line}</p>`;
+        }
+      });
+
+      if (inList) html += "</ol>";
+
+      return html;
+    }
+
   </script>
 </body>
+
 </html>
