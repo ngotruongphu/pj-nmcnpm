@@ -1,7 +1,9 @@
 body {
-    font-family: sans-serif;
+    font-family: "Nunito", sans-serif!important;
     margin: 40px auto;
     text-align: center;
+    font-optical-sizing: auto;
+    font-style: normal;
 }
 
 textarea {
@@ -78,7 +80,7 @@ h1 {
     padding: 20px 0;
     text-align: center;
     font-size: 32px;
-    font-weight: 700;
+    font-weight: bolder;
     background: linear-gradient(135deg, #007bff, #4e9fff);
     color: white;
     letter-spacing: 1px;
@@ -94,4 +96,8 @@ body {
 .slow-bounce {
     animation-duration: 5s !important;
     animation-timing-function: ease-in-out;
+}
+
+h3{
+    font-weight: bolder;
 }
