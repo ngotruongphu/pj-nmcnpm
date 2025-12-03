@@ -30,7 +30,7 @@ app.post("/api/ai", async (req, res) => {
         "Authorization": `Bearer ${process.env.OPENAI_API_KEY}` // 🔑 Thay bằng key thật
       },
       body: JSON.stringify({
-        model: "GPT-4o-mini",  // hoặc "gpt-4o", "gpt-3.5-turbo"
+        model: "gpt-3.5-turbo",  // hoặc "gpt-4o", "gpt-3.5-turbo"
         messages: [
           { role: "system", content: "Always and strictly reply in English. Never use any other language under any circumstances" },
           { role: "user", content: inputs  }
@@ -42,10 +42,10 @@ app.post("/api/ai", async (req, res) => {
     console.log("🧠 ChatGPT response:", data);
 
     // Trích xuất nội dung trả lời
-    const reply = data?.choices?.[0]?.message?.content || "🤖 Không có phản hồi.";
+    const reply = data?.choices?.[0]?.message?.content || "No response from the server!";
     res.json({ reply });
   } catch (err) {
-    console.error("🔥 Lỗi gọi ChatGPT:", err);
+    console.error("Error:", err);
     res.status(500).json({ error: "Server error", details: err.message });
   }
 });
