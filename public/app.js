@@ -8,11 +8,13 @@ const input = document.getElementById("input");
 const status = document.getElementById("status");
 const chat = document.getElementById("chat");
 
+// Start recording
 document.getElementById("start").onclick = () => {
     recognition.start();
     status.innerHTML = `Status: <i class="fa-solid fa-microphone-lines fa-beat-fade"></i>`;
 };
 
+//Stop recording + stop speaking
 document.getElementById("stop").onclick = () => {
     recognition.stop();
     speechSynthesis.cancel();
@@ -20,6 +22,7 @@ document.getElementById("stop").onclick = () => {
     status.innerHTML = `Status: <i class="fa-solid fa-moon"></i>`;
 };
 
+//Transcript speech to text
 recognition.onresult = (event) => {
     let text = "";
     for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -28,6 +31,7 @@ recognition.onresult = (event) => {
     input.value = text.trim();
 };
 
+//Send the text to AI
 document.getElementById("btnSend").onclick = () => {
     const text = input.value.trim();
     if (text) sendToAI(text);
@@ -37,6 +41,8 @@ async function sendToAI(text) {
     const msgUser = document.createElement("div");
     msgUser.className = "msg user";
     msgUser.textContent = text;
+
+    //add message to the chatbox
     chat.appendChild(msgUser);
 
     const res = await fetch("/api/ai", {
@@ -54,24 +60,24 @@ async function sendToAI(text) {
 
     msgAI.innerHTML = formatAIReply(reply);
 
+    //Start text to speech
     let currentUtterance = null;
     currentUtterance = new SpeechSynthesisUtterance(reply);
     currentUtterance.lang = "en-US";
     speechSynthesis.speak(currentUtterance);
 
+    //add message to the chatbox
     chat.appendChild(msgAI);
 }
 
-
+//Start text to speech on specific graph
 document.getElementById("btnSpeak").onclick = () => {
     const ttsText = document.getElementById("ttsInput").value.trim();
     if (!ttsText) return;
-
-    const utter = new SpeechSynthesisUtterance(ttsText);
-    utter.lang = "vi-VN";
-    speechSynthesis.speak(utter);
+    speakWord(ttsText);
 };
 
+//format res function
 function formatAIReply(text) {
     text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
@@ -106,6 +112,7 @@ function formatAIReply(text) {
     return html;
 }
 
+//speak function 
 function speakWord(word) {
     const utter = new SpeechSynthesisUtterance(word);
     utter.lang = 'en-US';
@@ -133,16 +140,18 @@ document.getElementById("dictBtn").addEventListener("click", async () => {
         }
 
         const meanings = data[0].meanings;
+        const phonetic = data[0].phonetics.find(p => p.text)?.text || "N/A";
 
         let html = `<h4>${word}<i class="fa-solid fa-volume-high speak-icon" 
                    style="cursor:pointer; margin-left:10px;" 
-                   onclick="speakWord('${word}')"></i></h4>`;
+                   onclick="speakWord('${word}')"></i></h4>
+                   <p><b>Phonetic:</b> ${phonetic}</p>
+                   `;
 
         meanings.forEach(m => {
-            html += `
+            html += ` <hr>               
                 <p><b>Part of Speech:</b> ${m.partOfSpeech}</p>
-                <p><b>Definition:</b> ${m.definitions[0].definition}</p>
-                <hr>
+                <p><b>Definition:</b> ${m.definitions[0].definition}</p>                
             `;
         });
 
